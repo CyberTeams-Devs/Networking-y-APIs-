@@ -5,6 +5,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import retrofit2.Call
@@ -16,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        val call = ApiClient.apiService.getCharacters(page = 3, size = 15)
+        val call = ApiClient.apiService.getCharacters(page = 1, size = 5)
 
         call.enqueue(object : Callback<CharacterResponse> {
             override fun onResponse(
@@ -24,9 +26,9 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful) {
                     val characters = response.body()?.items ?: emptyList<FuturamaCharacter>()
-                    characters.forEach {
-                        Log.d("Futurama:", "${it.name} - ${it.gender} - ${it.species}")
-                    }
+                    val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewPersonajes)
+                    recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+                    recyclerView.adapter = CharacterAdapter(characters)
                 } else {
                     Toast.makeText(
                         this@MainActivity,
